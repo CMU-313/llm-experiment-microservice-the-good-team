@@ -1,0 +1,12 @@
+[project]
+name = "llm-experiment-microservice-the-good-team"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "flask==3.0.0",
+    "ollama==0.6.0",
+    "pytest==7.4.0",
+    "requests==2.31.0",
+]
