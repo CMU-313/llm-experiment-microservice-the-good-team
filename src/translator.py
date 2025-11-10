@@ -53,64 +53,6 @@ def _looks_english(s: str, min_ratio: float = 0.6) -> bool:
     return (ascii_letters_spaces / max(1, len(s))) >= min_ratio
 
 
-def query_llm_robust(post: str) -> tuple[bool, str]:
-    try:
-        post = (post or "").strip()
-        if not post:
-            return (False, "MODEL FAILED")
-
-        # helpers
-        def _is_probably_english(s: str, min_ratio: float = 0.6) -> bool:
-            if not s: return False
-            ascii_letters_spaces = sum(ch.isascii() and (ch.isalpha() or ch.isspace()) for ch in s)
-            return (ascii_letters_spaces / max(1, len(s))) >= min_ratio
-
-        DENYLIST = {
-            "i don't understand your request",
-            "i dont understand your request",
-            "unknown",
-            "n/a",
-            "error",
-            "cannot translate",
-            "unable to comply",
-        }
-
-        lang_raw = get_language(post)
-        lang = (lang_raw or "")
-        if not isinstance(lang, str):
-            lang = ""
-        lang = lang.lower()
-
-        if lang in DENYLIST:
-            return (False, "MODEL FAILED")
-        if lang.startswith("english"):
-            # echo original English
-            return (True, post)
-
-        # ask for translation
-        translated_raw = get_translation(post)
-        translated = (translated_raw or "").strip()
-
-
-        # reject empty, unchanged (casefold/strip), denylisted, or non-English-looking
-        if not translated:
-            return (False, "MODEL FAILED")
-
-        if translated.casefold() == post.casefold():
-            return (False, "MODEL FAILED")
-
-        if translated.casefold() in DENYLIST:
-            return (False, "MODEL FAILED")
-
-        if not _is_probably_english(translated):
-            return (False, "MODEL FAILED")
-
-        # looks plausible
-        return (False, translated)
-
-    except Exception:
-        return (False, "MODEL FAILED")
-
 def translate_content(content: str) -> tuple[bool, str]:
     """
     Return (is_english, translated_content).
