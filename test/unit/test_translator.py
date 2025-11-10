@@ -1,5 +1,5 @@
 import pytest
-from src.translator import translate_content, query_llm_robust
+from src.translator import translate_content
 import src.translator as tr
 
 
